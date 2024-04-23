@@ -1,8 +1,8 @@
 package com.survivor.engine.entities;
 
 import com.survivor.engine.GameScene;
-import com.survivor.engine.math.Layout;
 import com.survivor.engine.listener.GameListener;
+import com.survivor.engine.math.Layout;
 import com.survivor.engine.math.Vector2D;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Parent;
@@ -10,14 +10,15 @@ import javafx.scene.layout.Pane;
 
 public abstract class Entity extends Parent implements GameListener {
 
-    public static boolean showHitboxes = true;
+    public static boolean showHitboxes = false;
     
     AnimationTimer timer;
-    Layout layout;
+    private Layout layout;
 
     public Entity(Layout layout) {
         attachGameListener();
         GameScene.addEntity(this);
+        GameScene.addEntityV2(this);
         setLayout(layout);
 
         if (showHitboxes) {
@@ -35,7 +36,7 @@ public abstract class Entity extends Parent implements GameListener {
             @Override
             public void handle(long now) {
                 if (lastCall == 0) lastCall = now / 1000000;
-                process(now / 1000000 - lastCall);
+                if(GameScene.isGameLoopRunning()) process(now / 1000000 - lastCall);
                 lastCall = now / 1000000;
             }
         };
@@ -46,7 +47,7 @@ public abstract class Entity extends Parent implements GameListener {
         this.layout = layout;
         setX(layout.getX());
         setY(layout.getY());
-        serRotation(layout.getRotation());
+        setRotation(layout.getRotation());
     }
 
     public void setPosition(Vector2D position) {
@@ -88,7 +89,8 @@ public abstract class Entity extends Parent implements GameListener {
         return new Layout(getX(), getY(), layout.getWidth(), layout.getHeight(), getRotate());
     }
 
-    public void serRotation(double rotation) {
+    @Deprecated // super weird
+    public void setRotation(double rotation) {
         setRotate(rotation);
     }
 
@@ -112,4 +114,14 @@ public abstract class Entity extends Parent implements GameListener {
         return false;
     }
 
+    public boolean isCollidingV2(Entity other) {
+        Vector2D distance = Vector2D.subtract(getLayout().getCenter(), other.getLayout().getCenter()).absolute();
+        Vector2D combinedWidth = Vector2D.add(
+                new Vector2D(getLayout().getWidth() / 2, getLayout().getHeight() / 2),
+                new Vector2D(other.getLayout().getWidth() / 2, other.getLayout().getHeight() / 2)
+        );
+        Vector2D overlap = Vector2D.subtract(
+                distance, combinedWidth);
+        return overlap.getX() < 0 && overlap.getY() < 0;
+    }
 }

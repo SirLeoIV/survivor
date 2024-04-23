@@ -1,4 +1,4 @@
-package com.survivor.game;
+package com.survivor.game.entities;
 
 import com.survivor.engine.entities.Entity;
 import com.survivor.engine.events.GameEvent;

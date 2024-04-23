@@ -1,23 +1,26 @@
-package com.survivor.game;
+package com.survivor.game.entities;
 
 import com.survivor.engine.GameScene;
 import com.survivor.engine.entities.Entity;
 import com.survivor.engine.events.CollisionEvent;
 import com.survivor.engine.events.GameEvent;
-import com.survivor.engine.events.InputEvent;
 import com.survivor.engine.listener.CollisionListener;
-import com.survivor.engine.listener.InputListener;
 import com.survivor.engine.math.Layout;
 import com.survivor.engine.math.Vector2D;
+import com.survivor.game.StateMachine;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Bullet extends Entity implements CollisionListener {
 
     Vector2D orientation;
     double speed = 500;
-    long creationTime = System.currentTimeMillis();
-    long lifeTime = 2000;
+    long lifeTimeLeft = 2000;
+
+    public int penetrationLeft = StateMachine.getInstance().penetration;
 
     public Bullet(Layout layout, Vector2D orientation) {
         super(layout);
@@ -38,8 +41,9 @@ public class Bullet extends Entity implements CollisionListener {
 
         Vector2D velocity = orientation.scaleTo(speed);
         setPosition(Vector2D.add(getPosition(), velocity.multiply((double) millisPassed / 1000)));
-
-        if (System.currentTimeMillis() - creationTime > lifeTime) {
+        // new Dot(new Layout(getLayout().getCenter().getX(), getLayout().getCenter().getY(), 1, 1, 0));
+        lifeTimeLeft -= millisPassed;
+        if (lifeTimeLeft <= 0) {
             GameScene.removeEntity(this);
         }
     }
@@ -50,7 +54,16 @@ public class Bullet extends Entity implements CollisionListener {
     @Override
     public void collisionUpdate(CollisionEvent event) {
         if (event.entity1 == this || event.entity2 == this) {
-            // GameScene.removeEntity(this);
+            penetrationLeft--;
+            if (penetrationLeft <= 0) {
+                GameScene.removeEntity(this);
+            }
         }
+    }
+
+    public static ArrayList<Bullet> getAllBullets() {
+        return GameScene.getEntitiesByClass(Bullet.class).stream()
+                .map(entity -> (Bullet) entity)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }

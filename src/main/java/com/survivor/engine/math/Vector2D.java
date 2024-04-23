@@ -1,7 +1,5 @@
 package com.survivor.engine.math;
 
-import org.w3c.dom.Node;
-
 public class Vector2D {
 
     private double x; // x frames per second
@@ -83,6 +81,10 @@ public class Vector2D {
 
     public Vector2D multiply(double scalar) {
         return new Vector2D(x * scalar, y * scalar);
+    }
+
+    public Vector2D absolute() {
+        return new Vector2D(Math.abs(x), Math.abs(y));
     }
 
     @Override

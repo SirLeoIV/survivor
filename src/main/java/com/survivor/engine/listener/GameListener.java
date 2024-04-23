@@ -1,11 +1,11 @@
 package com.survivor.engine.listener;
 
-import com.survivor.engine.events.GameEvent;
 import com.survivor.engine.GameScene;
+import com.survivor.engine.events.GameEvent;
 
 public interface GameListener {
 
-    void gameUpdate(GameEvent event);
+    default void gameUpdate(GameEvent event) {};
 
     default void attachGameListener() {
         GameScene.attachGameListener(this);

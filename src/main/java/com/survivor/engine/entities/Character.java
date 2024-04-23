@@ -4,12 +4,11 @@ import com.survivor.engine.events.GameEvent;
 import com.survivor.engine.math.Layout;
 import com.survivor.engine.math.Vector2D;
 
-public class Character extends Entity {
+public abstract class Character extends Entity {
 
     protected Vector2D velocity = new Vector2D(0, 0);
     protected Vector2D acceleration = new Vector2D(0, 0);
     protected Vector2D direction = new Vector2D(0, 0);
-    protected double speed = 300;
 
     public Character(Layout layout) {
         super(layout);
@@ -22,7 +21,7 @@ public class Character extends Entity {
     public void process(long millisPassed) {
         super.process(millisPassed);
         if (direction.getMagnitude() > 0) {
-            velocity = direction.scaleTo(speed);
+            velocity = direction.scaleTo(getSpeed());
         }
         try {
             velocity.cutToMagnitude(velocity.getMagnitude() * 0.95 / (60d / (1000d / millisPassed)));
@@ -32,10 +31,17 @@ public class Character extends Entity {
     }
 
     protected void move(double x, double y) {
-        setX(getX() + x);
-        setY(getY() + y);
+        double newX = getX() + x;
+        double newY = getY() + y;
+        if (newX < 0) newX = 0;
+        if (newY < 0) newY = 0;
+        if (newX > getScene().getWidth() - getLayout().getWidth()) newX = getScene().getWidth() - getLayout().getWidth();
+        if (newY > getScene().getHeight() - getLayout().getHeight()) newY = getScene().getHeight() - getLayout().getHeight();
+        setX(newX);
+        setY(newY);
     }
 
+    protected abstract double getSpeed();
 
     protected void moveUp() {
         direction.setY(-1);

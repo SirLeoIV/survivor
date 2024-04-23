@@ -1,9 +1,7 @@
 package com.survivor;
 
 import com.survivor.engine.GameScene;
-import com.survivor.engine.entities.Entity;
-import com.survivor.engine.math.Layout;
-import com.survivor.game.*;
+import com.survivor.game.GAME;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -16,16 +14,11 @@ public class GameApplication extends Application {
         Scene scene = new Scene(root, 1000, 600);
         root.initialize();
         stage.setTitle("Hello!");
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
-
-
-        Player player = new Player(new Layout(200, 200, 27, 35, 0));
-        Enemy enemy = new Enemy(new Layout(400, 400, 27, 35, 0));
-        Gun gun = new Gun(new Layout(200, 200, 2, 2, 0));
-        FPS fps = new FPS();
-        Score score = new Score();
-
+        GAME game = GAME.setInstance();
+        game.startNewGame();
     }
 
     public static void main(String[] args) {
