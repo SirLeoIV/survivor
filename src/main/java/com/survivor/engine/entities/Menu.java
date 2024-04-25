@@ -1,5 +1,6 @@
 package com.survivor.engine.entities;
 
+import javafx.animation.AnimationTimer;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 
@@ -10,14 +11,33 @@ public class Menu extends Overlay {
     Text title = new Text();
     ArrayList<ArrayList<Button>> buttons = new ArrayList<>();
 
+    AnimationTimer timer;
+    long initTime = System.currentTimeMillis();
+
     public Menu(double width, double height, String titleString) {
         super(width, height);
         getChildren().add(title);
         title.setFont(new javafx.scene.text.Font(20));
         setTitle(titleString);
+
+        timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                if (System.currentTimeMillis() - initTime > 500) {
+                    for (ArrayList<Button> buttonRow : buttons) {
+                        for (Button button : buttonRow) {
+                            button.setDisable(false);
+                        }
+                    }
+                    timer.stop();
+                }
+            }
+        };
+        timer.start();
     }
 
     public void addButton(Button button, int row) {
+        button.setDisable(true);
         if (buttons.size() <= row) {
             buttons.add(new ArrayList<>());
         }
@@ -48,7 +68,6 @@ public class Menu extends Overlay {
                                 + (menuHeight) / buttons.size() * i
                                 + (menuHeight) / buttons.size() / 2
                                 - button.getPrefHeight() / 2);
-                System.out.println(button.getLayoutX() + " " + button.getLayoutY() + " " + button.getPrefWidth() + " " + button.getPrefHeight()) ;
             }
         }
     }

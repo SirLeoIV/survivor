@@ -18,7 +18,6 @@ public abstract class Entity extends Parent implements GameListener {
     public Entity(Layout layout) {
         attachGameListener();
         GameScene.addEntity(this);
-        GameScene.addEntityV2(this);
         setLayout(layout);
 
         if (showHitboxes) {

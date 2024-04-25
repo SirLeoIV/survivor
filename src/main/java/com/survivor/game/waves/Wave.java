@@ -4,6 +4,7 @@ import com.survivor.engine.GameScene;
 import com.survivor.engine.entities.Banner;
 import com.survivor.engine.entities.Character;
 import com.survivor.engine.events.GameEvent;
+import com.survivor.engine.events.GameEventType;
 import com.survivor.engine.listener.GameListener;
 import com.survivor.engine.math.Vector2D;
 import com.survivor.game.entities.Enemy;
@@ -90,7 +91,7 @@ public class Wave implements GameListener {
 
     @Override
     public void gameUpdate(GameEvent event) {
-        if (event.getName().equals("REMOVE")) {
+        if (event.getType() == GameEventType.REMOVE_ENTITY) {
             enemies.remove(event.getData());
         }
     }

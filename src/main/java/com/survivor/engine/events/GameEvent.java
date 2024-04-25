@@ -2,8 +2,15 @@ package com.survivor.engine.events;
 
 public class GameEvent extends Event {
 
-    public GameEvent(String name, Object data) {
-        super(name, data);
+    GameEventType type;
+
+    public GameEvent(GameEventType type, Object data) {
+        super(type.name(), data);
+        this.type = type;
+    }
+
+    public GameEventType getType() {
+        return type;
     }
 
     @Override

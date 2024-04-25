@@ -7,6 +7,7 @@ import com.survivor.engine.events.InputEvent;
 import com.survivor.engine.listener.InputListener;
 import com.survivor.engine.math.Layout;
 import com.survivor.engine.math.Vector2D;
+import com.survivor.game.StateMachine;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
@@ -15,6 +16,9 @@ public class Gun extends Entity implements InputListener {
 
     Vector2D orientation = new Vector2D(0, 0);
     Text text = new Text("|5==");
+
+    Dot dot1 = new Dot(new Layout(0, 0, 5, 5, 0));
+    Dot dot2 = new Dot(new Layout(0, 0, 5, 5, 0));
 
     public Gun(Layout layout) {
         super(layout);
@@ -32,11 +36,12 @@ public class Gun extends Entity implements InputListener {
     public void inputUpdate(InputEvent event) {
         switch (event.type) {
             case MOUSE_JUST_PRESSED -> {
-                double angle = Math.atan2(orientation.getY(), orientation.getX()) - 135;
-                double x = getX() + 40 * Math.cos(angle);
-                double y = getY() + 40 * Math.sin(angle);
-                new Bullet(new Layout(x, y, 15, 15, orientation.getAngle()), orientation.multiply(-1));
-                // new Dot(new Layout(x, y, 5, 5, 0));
+                Vector2D bulletOrientation = orientation.scatter(StateMachine.getInstance().bulletScatter);
+                double angle = Math.atan2(orientation.getY(), orientation.getX()) - Math.toRadians(180);
+                double x = getPosition().getX() + 50 * Math.cos(angle);
+                double y = getPosition().getY() + 50 * Math.sin(angle);
+                dot1.setPosition(new Vector2D(x, y));
+                new Bullet(new Layout(x, y, 15, 15, bulletOrientation.getAngle()), bulletOrientation.multiply(-1));
             }
         }
     }
@@ -45,14 +50,20 @@ public class Gun extends Entity implements InputListener {
     public void process(long millisPassed) {
         super.process(millisPassed);
 
-        orientation = Vector2D.subtract(GameScene.getPlayer().getLayout().getCenter(), GameScene.getMousePosition()).scaleTo(1);
-
         setPosition(Vector2D.add(GameScene.getPlayer().getLayout().getPosition(), new Vector2D(30, 0)));
 
-        double angle = Math.atan2(orientation.getY(), orientation.getX()) / Math.PI * 180 + 180;
+        orientation = Vector2D.subtract(getLayout().getPosition(), GameScene.getMousePosition()).scaleTo(1);
+
+        double angle = Math.atan2(orientation.getY(), orientation.getX()) - Math.toRadians(180);
 
         getTransforms().clear();
-        getTransforms().add(new Rotate(angle, 0, 0));
+        getTransforms().add(new Rotate(Math.toDegrees(angle), 0, 0));
+
+        double x = getPosition().getX() + 50 * Math.cos(angle);
+        double y = getPosition().getY() + 50 * Math.sin(angle);
+        dot1.setPosition(new Vector2D(x, y));
+
+
 
         // new Dot(new Layout(getX(), getY(), 5, 5, 0));
         // new Dot(new Layout(getLayout().getCenter().getX(), getLayout().getCenter().getY(), 5, 5, 0));

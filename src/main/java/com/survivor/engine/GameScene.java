@@ -8,6 +8,7 @@ import com.survivor.engine.listener.CollisionListener;
 import com.survivor.engine.listener.GameListener;
 import com.survivor.engine.listener.InputListener;
 import com.survivor.engine.math.Vector2D;
+import com.survivor.game.entities.Player;
 import com.survivor.game.overlays.GameOverScreen;
 import com.survivor.game.overlays.UpgradeScreen;
 import javafx.scene.Parent;
@@ -17,7 +18,6 @@ import java.util.HashMap;
 
 public class GameScene extends Parent {
 
-    ArrayList<Entity> entities = new ArrayList<>(); // all entities
     Overlay overlay = null;
 
     private boolean gameLoopRunning = true;
@@ -25,7 +25,7 @@ public class GameScene extends Parent {
     ArrayList<GameListener> gameListeners = new ArrayList<>();
     ArrayList<CollisionListener> collisionListeners = new ArrayList<>();
     ArrayList<InputListener> inputListeners = new ArrayList<>();
-    Entity player;
+    Player player;
     Vector2D mousePosition = new Vector2D(0,0);
 
     HashMap<String, ArrayList<Entity>> entityDictionary = new HashMap<>(); // all entities grouped by class
@@ -42,10 +42,6 @@ public class GameScene extends Parent {
         instance = scene;
     }
 
-    public static ArrayList<Entity> getEntities() {
-        return instance.entities;
-    }
-
     public static boolean isGameLoopRunning() {
         return instance.gameLoopRunning;
     }
@@ -55,10 +51,15 @@ public class GameScene extends Parent {
     }
 
     public static void removeAllEntities() {
-        ArrayList<Entity> entities = new ArrayList<>(instance.entities);
-        for (Entity entity : entities) {
+        ArrayList<Entity> entities = getAllEntities();
+        ArrayList<Entity> entitiesCopy = (entities == null) ? new ArrayList<>() : new ArrayList<>(entities);
+        for (Entity entity : entitiesCopy) {
             removeEntity(entity);
         }
+    }
+
+    public static ArrayList<Entity> getAllEntities() {
+        return instance.entityDictionary.get(Entity.class.getName());
     }
 
     private void initializeInputListeners() {
@@ -74,7 +75,7 @@ public class GameScene extends Parent {
             }
             if (key == InputKey.KEY_0) { // TODO test case
                 if (getOverlay() != null) removeOverlay(getOverlay());
-                else setOverlay(new UpgradeScreen(500, 300));
+                else setOverlay(new UpgradeScreen(500, 500));
             }
 
             if (key == InputKey.KEY_9) { // TODO test case
@@ -133,7 +134,7 @@ public class GameScene extends Parent {
         });
     }
 
-    public static void addEntityV2(Entity entity) {
+    public static void addEntity(Entity entity) {
         boolean reachedEnd = false;
         String className = entity.getClass().getName();
 
@@ -142,7 +143,7 @@ public class GameScene extends Parent {
                 instance.entityDictionary.put(className, new ArrayList<>());
             }
             instance.entityDictionary.get(className).add(entity);
-            if (className.equals("com.survivor.engine.entities.Entity")) {
+            if (className.equals(Entity.class.getName())) {
                 reachedEnd = true;
             }
             try {
@@ -152,6 +153,7 @@ public class GameScene extends Parent {
                 e.printStackTrace();
             }
         }
+        instance.getChildren().add(entity);
     }
 
     public static void removeEntityV2(Entity entity) {
@@ -162,7 +164,7 @@ public class GameScene extends Parent {
             if (instance.entityDictionary.containsKey(className)) {
                 instance.entityDictionary.get(className).remove(entity);
             }
-            if (className.equals("com.survivor.engine.entities.Entity")) {
+            if (className.equals(Entity.class.getName())) {
                 reachedEnd = true;
             }
             try {
@@ -184,6 +186,7 @@ public class GameScene extends Parent {
         instance.getChildren().remove(instance.overlay);
         instance.overlay = overlay;
         instance.getChildren().add(overlay);
+        notifyGameListeners(new GameEvent(GameEventType.GAME_PAUSE, overlay));
     }
 
     public static Overlay getOverlay() {
@@ -195,6 +198,7 @@ public class GameScene extends Parent {
         instance.getChildren().remove(instance.overlay);
         instance.overlay = null;
         setGameLoopRunning(true);
+        notifyGameListeners(new GameEvent(GameEventType.GAME_RESUME, overlay));
     }
 
     public static void notifyGameListeners(GameEvent event) {
@@ -210,14 +214,8 @@ public class GameScene extends Parent {
         }
     }
 
-    public static void addEntity(Entity entity) {
-        instance.entities.add(entity);
-        instance.getChildren().add(entity);
-    }
-
     public static void removeEntity(Entity entity) {
-        notifyGameListeners(new GameEvent("REMOVE", entity));
-        instance.entities.remove(entity);
+        notifyGameListeners(new GameEvent(GameEventType.REMOVE_ENTITY, entity));
         instance.getChildren().remove(entity);
         removeEntityV2(entity);
 
@@ -238,12 +236,12 @@ public class GameScene extends Parent {
 
     public static void attachGameListener(GameListener listener) {
         instance.gameListeners.add(listener);
-        notifyGameListeners(new GameEvent("ATTACH", listener));
+        notifyGameListeners(new GameEvent(GameEventType.ATTACH_LISTENER, listener));
     }
 
     public static void detachGameListener(GameListener listener) {
         instance.gameListeners.remove(listener);
-        notifyGameListeners(new GameEvent("DETACH", listener));
+        notifyGameListeners(new GameEvent(GameEventType.DETACH_LISTENER, listener));
     }
 
     public static void attachCollisionListener(CollisionListener listener) {
@@ -266,11 +264,11 @@ public class GameScene extends Parent {
         initializeInputListeners();
     }
 
-    public static void setPlayer(Entity player) {
+    public static void setPlayer(Player player) {
         instance.player = player;
     }
 
-    public static Entity getPlayer() {
+    public static Player getPlayer() {
         return instance.player;
     }
 

@@ -10,6 +10,8 @@ public class StateMachine {
     public int damage = 30;
     public int speed = 300;
     public int penetration = 1;
+    public int bulletSpeed = 500;
+    public double bulletScatter = 0.5;
 
     static StateMachine instance = null;
 

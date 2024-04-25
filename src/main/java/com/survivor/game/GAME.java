@@ -42,11 +42,11 @@ public class GAME {
         GameScene.removeAllEntities();
         StateMachine.resetInstance();
         Player player = new Player(new Layout(200, 200, 27, 35, 0));
-        Gun gun = new Gun(new Layout(200, 200, 60, 20, 0));
-        Score score = new Score();
-        FPS fps = new FPS();
-        Coordinates coordinates = new Coordinates(player, new Layout(10, 50, 1, 1, 0));
-        Stats stats = new Stats();
+        new Gun(new Layout(200, 200, 60, 20, 0));
+        new Score();
+        new FPS();
+        new Coordinates(player, new Layout(10, 50, 1, 1, 0));
+        new Stats();
         Stats.refresh();
         currentWave = wave1;
         currentWave.startWave();
@@ -61,7 +61,7 @@ public class GAME {
                     return;
                 }
                 if (StateMachine.getInstance().money >= 5) {
-                    GameScene.setOverlay(new UpgradeScreen(500, 400));
+                    GameScene.setOverlay(new UpgradeScreen(500, 500));
                     return;
                 }
                 if (currentWave.isWaveOver()) {

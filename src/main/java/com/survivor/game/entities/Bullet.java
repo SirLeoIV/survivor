@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class Bullet extends Entity implements CollisionListener {
 
     Vector2D orientation;
-    double speed = 500;
+    double speed;
     long lifeTimeLeft = 2000;
 
     public int penetrationLeft = StateMachine.getInstance().penetration;
@@ -26,6 +26,11 @@ public class Bullet extends Entity implements CollisionListener {
         super(layout);
         this.orientation = orientation;
         attachCollisionListener();
+
+        speed = StateMachine.getInstance().bulletSpeed;
+
+        setY(getY() - getLayout().getHeight() / 2);
+        setX(getX() - getLayout().getWidth() / 2);
 
         Text text = new Text(">");
         text.setX(0);
@@ -38,10 +43,9 @@ public class Bullet extends Entity implements CollisionListener {
     public void process(long millisPassed) {
         super.process(millisPassed);
 
-
         Vector2D velocity = orientation.scaleTo(speed);
         setPosition(Vector2D.add(getPosition(), velocity.multiply((double) millisPassed / 1000)));
-        // new Dot(new Layout(getLayout().getCenter().getX(), getLayout().getCenter().getY(), 1, 1, 0));
+        new Dot(new Layout(getLayout().getCenter().getX(), getLayout().getCenter().getY(), 1, 1, 0), 500);
         lifeTimeLeft -= millisPassed;
         if (lifeTimeLeft <= 0) {
             GameScene.removeEntity(this);

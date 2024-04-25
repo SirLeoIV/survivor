@@ -19,7 +19,8 @@ public class Coordinates extends Entity {
 
 
     private void updateText() {
-        text.setText(entity.getClass().getName() +  ": x: " + (int) entity.getLayout().getX() + "; y: " + (int) entity.getLayout().getY());
+        String className = entity.getClass().getName().split("\\.")[entity.getClass().getName().split("\\.").length - 1];
+        text.setText(className  +  ": x: " + (int) entity.getLayout().getX() + "; y: " + (int) entity.getLayout().getY());
     }
 
     @Override

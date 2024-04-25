@@ -87,6 +87,19 @@ public class Vector2D {
         return new Vector2D(Math.abs(x), Math.abs(y));
     }
 
+    public Vector2D scatter(double max) {
+        return new Vector2D(x + Math.random() * max - max / 2, y + Math.random() * max - max / 2);
+    }
+
+    public static void main(String[] args) {
+        Vector2D v = new Vector2D(1, 1);
+        for (int i = 0; i < 10; i++) {
+            System.out.println(v.scatter(0.5));
+        }
+        System.out.println("----");
+        System.out.println(Math.toDegrees(Math.atan2(1, 1)));
+    }
+
     @Override
     public String toString() {
         return "Vector2D{" +

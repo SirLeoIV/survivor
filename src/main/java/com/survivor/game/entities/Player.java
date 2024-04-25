@@ -2,9 +2,7 @@ package com.survivor.game.entities;
 
 import com.survivor.engine.GameScene;
 import com.survivor.engine.entities.Character;
-import com.survivor.engine.events.CollisionEvent;
-import com.survivor.engine.events.GameEvent;
-import com.survivor.engine.events.InputEvent;
+import com.survivor.engine.events.*;
 import com.survivor.engine.listener.CollisionListener;
 import com.survivor.engine.listener.InputListener;
 import com.survivor.engine.math.Layout;
@@ -26,6 +24,14 @@ public class Player extends Character implements InputListener, CollisionListene
 
     private ProgressBar healthBar = new ProgressBar(new Vector2D(0, 0), 8, 8);
 
+    private boolean upPressed = false;
+    private boolean downPressed = false;
+    private boolean leftPressed = false;
+    private boolean rightPressed = false;
+
+    private boolean upAfterDown = false;
+    private boolean rightAfterLeft = false;
+
     public Player(Layout layout) {
         super(layout);
 
@@ -36,7 +42,6 @@ public class Player extends Character implements InputListener, CollisionListene
 
         text = new Text("P");
         text.setX(0);
-        System.out.println(getLayout().getHeight());
         text.setY(getLayout().getHeight());
         text.setFont(new Font(50));
         getChildren().add(text);
@@ -46,7 +51,16 @@ public class Player extends Character implements InputListener, CollisionListene
     }
 
     @Override
-    public void gameUpdate(GameEvent event) {}
+    public void gameUpdate(GameEvent event) {
+        if (event.getType() == GameEventType.GAME_RESUME) {
+            System.out.println("Player resumed");
+            upPressed = false;
+            downPressed = false;
+            leftPressed = false;
+            rightPressed = false;
+            updateDirection();
+        }
+    }
 
     private void dash() {
         if (System.currentTimeMillis() - dashStart < 1000 && direction.getMagnitude() == 0) return;
@@ -60,21 +74,80 @@ public class Player extends Character implements InputListener, CollisionListene
         switch (event.type) {
             case KEY_JUST_PRESSED -> {
                 switch (event.key) {
-                    case KEY_UP, KEY_W -> moveUp();
-                    case KEY_DOWN, KEY_S -> moveDown();
-                    case KEY_LEFT, KEY_A -> moveLeft();
-                    case KEY_RIGHT, KEY_D -> moveRight();
+                    case KEY_UP, KEY_W -> upPressed();
+                    case KEY_DOWN, KEY_S -> downPressed();
+                    case KEY_LEFT, KEY_A -> leftPressed();
+                    case KEY_RIGHT, KEY_D -> rightPressed();
                     case KEY_SPACE -> dash();
+                }}
+            case KEY_PRESSED -> {
+                switch (event.key) {
+                    case KEY_UP, KEY_W -> upPressing();
+                    case KEY_DOWN, KEY_S -> downPressing();
+                    case KEY_LEFT, KEY_A -> leftPressing();
+                    case KEY_RIGHT, KEY_D -> rightPressing();
                 }}
             case KEY_RELEASED -> {
                 switch (event.key) {
-                    case KEY_UP, KEY_W -> direction.setY(direction.getY() == -1 ? 0 : direction.getY());
-                    case KEY_DOWN, KEY_S -> direction.setY(direction.getY() == 1 ? 0 : direction.getY());
-                    case KEY_LEFT, KEY_A -> direction.setX(direction.getX() == -1 ? 0 : direction.getX());
-                    case KEY_RIGHT, KEY_D -> direction.setX(direction.getX() == 1 ? 0 : direction.getX());
+                    case KEY_UP, KEY_W -> upPressed = false;
+                    case KEY_DOWN, KEY_S -> downPressed = false;
+                    case KEY_LEFT, KEY_A -> leftPressed = false;
+                    case KEY_RIGHT, KEY_D -> rightPressed = false;
                 }}
-
         }
+        if (event.type == InputType.KEY_JUST_PRESSED || event.type == InputType.KEY_RELEASED) updateDirection();
+    }
+
+    protected void upPressed() {
+        upPressed = true;
+        upAfterDown = true;
+    }
+
+    protected void upPressing() {
+        upPressed = true;
+        if (!downPressed) upAfterDown = true;
+    }
+
+    protected void downPressed() {
+        downPressed = true;
+        upAfterDown = false;
+    }
+
+    protected void downPressing() {
+        downPressed = true;
+        if (!upPressed) upAfterDown = false;
+    }
+
+    protected void leftPressed() {
+        leftPressed = true;
+        rightAfterLeft = false;
+    }
+
+    protected void leftPressing() {
+        leftPressed = true;
+        if (!rightPressed) rightAfterLeft = false;
+    }
+
+    protected void rightPressed() {
+        rightPressed = true;
+        rightAfterLeft = true;
+    }
+
+    protected void rightPressing() {
+        rightPressed = true;
+        if (!leftPressed) rightAfterLeft = true;
+    }
+
+    protected void updateDirection() {
+        direction.setY(0);
+        if (upPressed && !downPressed) direction.setY(-1);
+        else if (downPressed && !upPressed) direction.setY(1);
+        else if (upPressed && downPressed) direction.setY(upAfterDown ? -1 : 1);
+
+        direction.setX(0);
+        if (leftPressed && !rightPressed) direction.setX(-1);
+        else if (rightPressed && !leftPressed) direction.setX(1);
+        else if (leftPressed && rightPressed) direction.setX(rightAfterLeft ? 1 : -1);
     }
 
     @Override
@@ -97,10 +170,14 @@ public class Player extends Character implements InputListener, CollisionListene
                 lastHitTime = System.currentTimeMillis();
                 health = health - 10;
                 if (health < 0) health = 0;
-                healthBar.setToFraction((double) health / StateMachine.getInstance().maxHealth);
-                System.out.println("Player health: " + health);
+                updateHealthBar();
             }
         }
+    }
+
+    private void updateHealthBar() {
+        healthBar.setToFraction((double) health / StateMachine.getInstance().maxHealth);
+        Stats.refresh();
     }
 
     @Override
@@ -110,6 +187,15 @@ public class Player extends Character implements InputListener, CollisionListene
 
     public int getHealth() {
         return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = Math.min(StateMachine.getInstance().maxHealth, Math.max(0, health));
+        updateHealthBar();
+    }
+
+    public void increaseHealth(int health) {
+        setHealth(this.health + health);
     }
 
     private void checkCollisions() {

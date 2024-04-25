@@ -22,15 +22,15 @@ public class Enemy extends Character implements CollisionListener {
     private final int maxHealth = 100;
     private int health = maxHealth;
     private long lastHitTime = 0;
+    Text text = new Text("E");
 
-    private ProgressBar healthBar = new ProgressBar(new Vector2D(0, 0), 8, 8);
+    private final ProgressBar healthBar = new ProgressBar(new Vector2D(0, 0), 8, 8);
 
     public Enemy(Vector2D position) {
         super(new Layout(position.getX(), position.getY(), 27, 35, 0));
 
         attachCollisionListener();
 
-        Text text = new Text("E");
         text.setX(0);
         text.setY(getLayout().getHeight());
         text.setFont(new Font(50));
@@ -84,7 +84,7 @@ public class Enemy extends Character implements CollisionListener {
 
     @Override
     protected double getSpeed() {
-        return 200;
+        return 2;
     }
 
     public static ArrayList<Enemy> getAllEnemies() {
