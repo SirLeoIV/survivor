@@ -20,6 +20,7 @@ public class Stats extends Entity {
     Text penetration = new Text();
     Text bulletSpeed = new Text();
     Text bulletScatter = new Text();
+    Text reloadTime = new Text();
 
     static Stats instance = null;
 
@@ -35,6 +36,7 @@ public class Stats extends Entity {
         penetration.setY(140);
         bulletSpeed.setY(160);
         bulletScatter.setY(180);
+        reloadTime.setY(200);
         // getChildren().add(score);
         getChildren().add(money);
         getChildren().add(wave);
@@ -45,6 +47,7 @@ public class Stats extends Entity {
         getChildren().add(penetration);
         getChildren().add(bulletSpeed);
         getChildren().add(bulletScatter);
+        getChildren().add(reloadTime);
         instance = this;
     }
 
@@ -66,6 +69,7 @@ public class Stats extends Entity {
         getInstance().speed.setText("Speed: " + states.speed);
         getInstance().penetration.setText("Penetration: " + states.penetration);
         getInstance().bulletSpeed.setText("Bullet Speed: " + states.bulletSpeed);
-        getInstance().bulletScatter.setText("Bullet Scatter: " + states.bulletScatter);
+        getInstance().bulletScatter.setText("Bullet Scatter: " + ((int) (states.bulletScatter * 10)) / 10d);
+        getInstance().reloadTime.setText("Reload Time: " + states.reloadTime / 1000d + "s");
     }
 }

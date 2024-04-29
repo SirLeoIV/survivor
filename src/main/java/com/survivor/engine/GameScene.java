@@ -64,7 +64,7 @@ public class GameScene extends Parent {
 
     private void initializeInputListeners() {
         getScene().setOnKeyPressed(event -> {
-            if (!gameLoopRunning) return;
+            // if (!gameLoopRunning) return;
             InputKey key = InputKey.getKey(event.getCode().getName());
             if (key == InputKey.UNDEFINED) return;
             InputType type = KeyStates.keyStates.get(key) == InputType.KEY_RELEASED ? InputType.KEY_JUST_PRESSED : InputType.KEY_PRESSED;

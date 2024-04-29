@@ -53,11 +53,10 @@ public class Player extends Character implements InputListener, CollisionListene
     @Override
     public void gameUpdate(GameEvent event) {
         if (event.getType() == GameEventType.GAME_RESUME) {
-            System.out.println("Player resumed");
-            upPressed = false;
-            downPressed = false;
-            leftPressed = false;
-            rightPressed = false;
+            // upPressed = false;
+            // downPressed = false;
+            // leftPressed = false;
+            // rightPressed = false;
             updateDirection();
         }
     }
@@ -80,13 +79,13 @@ public class Player extends Character implements InputListener, CollisionListene
                     case KEY_RIGHT, KEY_D -> rightPressed();
                     case KEY_SPACE -> dash();
                 }}
-            case KEY_PRESSED -> {
-                switch (event.key) {
-                    case KEY_UP, KEY_W -> upPressing();
-                    case KEY_DOWN, KEY_S -> downPressing();
-                    case KEY_LEFT, KEY_A -> leftPressing();
-                    case KEY_RIGHT, KEY_D -> rightPressing();
-                }}
+            // case KEY_PRESSED -> {
+            //     switch (event.key) {
+            //         case KEY_UP, KEY_W -> upPressing();
+            //         case KEY_DOWN, KEY_S -> downPressing();
+            //         case KEY_LEFT, KEY_A -> leftPressing();
+            //         case KEY_RIGHT, KEY_D -> rightPressing();
+            //     }}
             case KEY_RELEASED -> {
                 switch (event.key) {
                     case KEY_UP, KEY_W -> upPressed = false;

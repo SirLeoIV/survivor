@@ -39,6 +39,11 @@ public class ProgressBar extends Parent {
         return maxValue;
     }
 
+    public void setMaxValue(int maxValue) {
+        this.maxValue = maxValue;
+        updateProgress(currentValue);
+    }
+
     public void setToFraction(double fraction) {
         updateProgress((int) (fraction * maxValue));
     }

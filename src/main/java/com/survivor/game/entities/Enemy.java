@@ -84,7 +84,7 @@ public class Enemy extends Character implements CollisionListener {
 
     @Override
     protected double getSpeed() {
-        return 2;
+        return 200;
     }
 
     public static ArrayList<Enemy> getAllEnemies() {

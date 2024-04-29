@@ -22,7 +22,7 @@ public class EndingScreen extends Parent {
     }
 
     public EndingScreen(Vector2D position, int maxValue, int currentValue, int size) {
-        this(position, maxValue, 0);
+        this(position, maxValue, currentValue);
         progress.setFont(new javafx.scene.text.Font(size));
     }
 

@@ -12,6 +12,7 @@ public class StateMachine {
     public int penetration = 1;
     public int bulletSpeed = 500;
     public double bulletScatter = 0.5;
+    public long reloadTime = 1000;
 
     static StateMachine instance = null;
 

@@ -17,6 +17,7 @@ public class UpgradeScreen extends Menu {
         Button speed = new Button("Movement Speed");
         Button maxHealth = new Button("Max Health");
         Button heal = new Button("Heal");
+        Button reloadTime = new Button("Reload Time");
 
         damage.setOnAction(e -> {
             StateMachine.getInstance().damage += 10;
@@ -54,6 +55,11 @@ public class UpgradeScreen extends Menu {
             pay(5);
             refreshAndClose();
         });
+        reloadTime.setOnAction(e -> {
+            StateMachine.getInstance().reloadTime = Math.max(100, StateMachine.getInstance().reloadTime - 100);
+            pay(5);
+            refreshAndClose();
+        });
 
         addButton(damage, 1);
         addButton(penetration, 2);
@@ -62,6 +68,7 @@ public class UpgradeScreen extends Menu {
         addButton(speed, 5);
         addButton(maxHealth, 6);
         addButton(heal, 7);
+        addButton(reloadTime, 8);
     }
 
     private void pay(int amount) {
