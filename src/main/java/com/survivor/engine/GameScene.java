@@ -1,6 +1,5 @@
 package com.survivor.engine;
 
-import com.survivor.engine.entities.Banner;
 import com.survivor.engine.entities.Entity;
 import com.survivor.engine.entities.Overlay;
 import com.survivor.engine.events.*;
@@ -9,7 +8,7 @@ import com.survivor.engine.listener.GameListener;
 import com.survivor.engine.listener.InputListener;
 import com.survivor.engine.math.Vector2D;
 import com.survivor.game.entities.Player;
-import com.survivor.game.overlays.GameOverScreen;
+import com.survivor.game.overlays.PauseScreen;
 import com.survivor.game.overlays.UpgradeScreen;
 import javafx.scene.Parent;
 
@@ -75,15 +74,12 @@ public class GameScene extends Parent {
             }
             if (key == InputKey.KEY_0) { // TODO test case
                 if (getOverlay() != null) removeOverlay(getOverlay());
-                else setOverlay(new UpgradeScreen(500, 500));
+                else setOverlay(new UpgradeScreen(500, 500, 1));
             }
-
-            if (key == InputKey.KEY_9) { // TODO test case
-                if (getOverlay() != null) removeOverlay(getOverlay());
-                else setOverlay(new GameOverScreen(500, 300));
-            }
-            if (key == InputKey.KEY_B) { // TODO test case
-                Banner banner = new Banner("Hello", 5000);
+            if (key == InputKey.KEY_ESCAPE) {
+                if (getOverlay() == null) setOverlay(new PauseScreen(500, 300));
+                else if (getOverlay() instanceof PauseScreen) removeOverlay(getOverlay());
+                else overlay.refresh();
             }
         });
         getScene().setOnKeyReleased(event -> {

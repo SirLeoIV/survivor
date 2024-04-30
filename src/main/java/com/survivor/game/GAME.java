@@ -5,20 +5,15 @@ import com.survivor.engine.math.Layout;
 import com.survivor.game.entities.*;
 import com.survivor.game.overlays.GameOverScreen;
 import com.survivor.game.overlays.UpgradeScreen;
-import com.survivor.game.overlays.WinningScreen;
 import com.survivor.game.waves.Wave;
 import javafx.animation.AnimationTimer;
 
 public class GAME {
 
     AnimationTimer timer;
-    Wave currentWave;
 
-    Wave wave1 = new Wave("Wave 1", 5);
-    Wave wave2 = new Wave("Wave 2", 10);
-    Wave wave3 = new Wave("Wave 3", 15);
-    Wave wave4 = new Wave("Wave 4", 25);
-    Wave wave5 = new Wave("Wave 5", 40);
+    private Wave currentWave;
+    private int waveNumber;
 
     private static GAME instance;
 
@@ -34,8 +29,8 @@ public class GAME {
         return instance;
     }
 
-    public void startNextWave() {
-        currentWave.startWave();
+    public Wave getCurrentWave() {
+        return currentWave;
     }
 
     public void startNewGame() {
@@ -48,8 +43,10 @@ public class GAME {
         new Coordinates(player, new Layout(10, 50, 1, 1, 0));
         new Stats();
         Stats.refresh();
-        currentWave = wave1;
+        waveNumber = 1;
+        currentWave = new Wave("Wave 1", 5, 0);
         currentWave.startWave();
+        GameScene.setOverlay(new UpgradeScreen(500, 500, 1));
 
         timer = new AnimationTimer() {
             @Override
@@ -60,26 +57,18 @@ public class GAME {
                     stop();
                     return;
                 }
-                if (StateMachine.getInstance().money >= 5) {
-                    GameScene.setOverlay(new UpgradeScreen(500, 500));
-                    return;
-                }
                 if (currentWave.isWaveOver()) {
-                    if (currentWave == wave1) {
-                        currentWave = wave2;
-                    } else if (currentWave == wave2) {
-                        currentWave = wave3;
-                    } else if (currentWave == wave3) {
-                        currentWave = wave4;
-                    } else if (currentWave == wave4) {
-                        currentWave = wave5;
+                    waveNumber++;
+                    StateMachine.getInstance().wave = waveNumber;
+                    Stats.refresh();
+                    if (waveNumber % 2 == 1) {
+                        currentWave = new Wave("Wave " + (waveNumber + 1) / 2, waveNumber * 5, 0);
                     } else {
-                        GameScene.setOverlay(new WinningScreen(500, 400));
-                        stop();
-                        timer.stop();
-                        return;
+                        currentWave = new Wave("Boss " + waveNumber / 2, 0, waveNumber);
                     }
+
                     currentWave.startWave();
+                    GameScene.setOverlay(new UpgradeScreen(500, 500, waveNumber));
                 }
             }
         };

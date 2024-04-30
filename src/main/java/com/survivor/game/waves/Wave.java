@@ -7,7 +7,8 @@ import com.survivor.engine.events.GameEvent;
 import com.survivor.engine.events.GameEventType;
 import com.survivor.engine.listener.GameListener;
 import com.survivor.engine.math.Vector2D;
-import com.survivor.game.entities.Enemy;
+import com.survivor.game.entities.enemies.Boss;
+import com.survivor.game.entities.enemies.Minion;
 import javafx.animation.AnimationTimer;
 
 import java.util.ArrayList;
@@ -20,13 +21,15 @@ public class Wave implements GameListener {
     long timeLeft = 0;
     boolean timed = false;
 
-    int numEnemies = 0;
+    int numMinions = 0;
+    int numBosses = 0;
 
     String title;
 
-    public Wave(String title, int numEnemies) {
+    public Wave(String title, int numMinions, int numBosses) {
         this.title = title;
-        this.numEnemies = numEnemies;
+        this.numMinions = numMinions;
+        this.numBosses = numBosses;
         timer = new AnimationTimer() {
             long lastCall = 0;
             @Override
@@ -48,10 +51,16 @@ public class Wave implements GameListener {
     public void startWave() {
         System.out.println("Starting wave");
         new Banner(title, 2000);
-        for (int i = 0; i < numEnemies; i++) {
-            enemies.add(new Enemy(new Vector2D(
+        for (int i = 0; i < numMinions; i++) {
+            enemies.add(new Minion(new Vector2D(
                     Math.random() * GameScene.getInstance().getScene().getWidth(),
                     Math.random() * GameScene.getInstance().getScene().getHeight())
+            ));
+        }
+        for (int i = 0; i < numBosses; i++) {
+            enemies.add(new Boss(new Vector2D(
+                     Math.random() * GameScene.getInstance().getScene().getWidth(),
+                     Math.random() * GameScene.getInstance().getScene().getHeight())
             ));
         }
         GameScene.attachGameListener(this);
@@ -82,6 +91,10 @@ public class Wave implements GameListener {
 
     public void addEnemies(ArrayList<Character> enemies) {
         this.enemies.addAll(enemies);
+    }
+
+    public void addEnemy(Character enemy) {
+        enemies.add(enemy);
     }
 
     public void setTimeLeft(long timeLeft) {

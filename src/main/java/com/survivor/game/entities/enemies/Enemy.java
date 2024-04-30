@@ -1,4 +1,4 @@
-package com.survivor.game.entities;
+package com.survivor.game.entities.enemies;
 
 import com.survivor.engine.GameScene;
 import com.survivor.engine.entities.Character;
@@ -9,18 +9,18 @@ import com.survivor.engine.math.Vector2D;
 import com.survivor.game.ProgressBar;
 import com.survivor.game.Score;
 import com.survivor.game.StateMachine;
+import com.survivor.game.entities.Bullet;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public class Enemy extends Character implements CollisionListener {
+public abstract class Enemy extends Character implements CollisionListener {
 
     private static final ArrayList<Enemy> enemies = new ArrayList<>();
 
-    private final int maxHealth = 100;
-    private int health = maxHealth;
+    private int health = getMaxHealth();
     private long lastHitTime = 0;
     Text text = new Text("E");
 
@@ -66,7 +66,7 @@ public class Enemy extends Character implements CollisionListener {
                     enemies.remove(this);
                     return;
                 }
-                healthBar.setToFraction((double) health / maxHealth);
+                healthBar.setToFraction((double) health / getMaxHealth());
             }
         }
     }
@@ -86,6 +86,8 @@ public class Enemy extends Character implements CollisionListener {
     protected double getSpeed() {
         return 200;
     }
+
+    protected abstract int getMaxHealth();
 
     public static ArrayList<Enemy> getAllEnemies() {
         return GameScene.getEntitiesByClass(Enemy.class).stream()

@@ -63,7 +63,7 @@ public enum InputKey {
             case "Right" -> KEY_RIGHT;
             case "Space" -> KEY_SPACE;
             case "Enter" -> KEY_ENTER;
-            case "Escape" -> KEY_ESCAPE;
+            case "Esc" -> KEY_ESCAPE;
             case "PRIMARY" -> MOUSE_PRIMARY;
             case "SECONDARY" -> MOUSE_SECONDARY;
             case "MIDDLE" -> MOUSE_MIDDLE;

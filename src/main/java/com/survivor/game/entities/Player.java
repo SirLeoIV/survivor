@@ -9,6 +9,7 @@ import com.survivor.engine.math.Layout;
 import com.survivor.engine.math.Vector2D;
 import com.survivor.game.ProgressBar;
 import com.survivor.game.StateMachine;
+import com.survivor.game.entities.enemies.Enemy;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 

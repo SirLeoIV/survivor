@@ -75,4 +75,9 @@ public class Menu extends Overlay {
     public void close() {
         remove();
     }
+
+    @Override
+    public void refresh() {
+        repaint();
+    }
 }

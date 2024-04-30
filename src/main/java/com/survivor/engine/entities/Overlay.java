@@ -49,4 +49,6 @@ public abstract class Overlay extends Parent implements GameListener {
     public void setHeight(double height) {
         this.height = height;
     }
+
+    public abstract void refresh();
 }

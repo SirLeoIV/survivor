@@ -1,5 +1,6 @@
 package com.survivor.game.overlays;
 
+import com.survivor.engine.GameScene;
 import com.survivor.engine.entities.Menu;
 import com.survivor.game.GAME;
 import javafx.scene.control.Button;
@@ -15,5 +16,10 @@ public class WinningScreen extends Menu {
             close();
         });
         addButton(restart, 1);
+    }
+
+    @Override
+    public void refresh() {
+        GameScene.setOverlay(new WinningScreen(getWidth(), getHeight()));
     }
 }

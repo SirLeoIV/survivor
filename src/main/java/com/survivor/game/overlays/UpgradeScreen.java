@@ -5,11 +5,17 @@ import com.survivor.engine.entities.Menu;
 import com.survivor.game.StateMachine;
 import com.survivor.game.entities.Stats;
 import javafx.scene.control.Button;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 public class UpgradeScreen extends Menu {
 
-    public UpgradeScreen(double width, double height) {
+    int numberOfUpgrades;
+    Text upgradesLeft = new Text();
+
+    public UpgradeScreen(double width, double height, int numberOfUpgrades) {
         super(width, height, "CHOOSE YOUR UPGRADE");
+        this.numberOfUpgrades = numberOfUpgrades;
         Button damage = new Button("Bullet Damage");
         Button penetration = new Button("Bullet Penetration");
         Button bulletSpeed = new Button("Bullet Speed");
@@ -19,45 +25,52 @@ public class UpgradeScreen extends Menu {
         Button heal = new Button("Heal");
         Button reloadTime = new Button("Reload Time");
 
+
+        upgradesLeft.setText("Upgrades left: " + numberOfUpgrades);
+        upgradesLeft.setFont(new Font(20));
+        upgradesLeft.setX(width / 2 - upgradesLeft.getBoundsInLocal().getWidth() / 2 );
+        upgradesLeft.setY(height + upgradesLeft.getBoundsInLocal().getHeight());
+        getChildren().add(upgradesLeft);
+
         damage.setOnAction(e -> {
             StateMachine.getInstance().damage += 10;
-            pay(5);
+            pay();
             refreshAndClose();
         });
         penetration.setOnAction(e -> {
             StateMachine.getInstance().penetration += 1;
-            pay(5);
+            pay();
             refreshAndClose();
         });
         bulletSpeed.setOnAction(e -> {
             StateMachine.getInstance().bulletSpeed += 50;
-            pay(5);
+            pay();
             refreshAndClose();
         });
         bulletScatter.setOnAction(e -> {
             StateMachine.getInstance().bulletScatter = Math.max(0, StateMachine.getInstance().bulletScatter - 0.1);
-            pay(5);
+            pay();
             refreshAndClose();
         });
         speed.setOnAction(e -> {
             StateMachine.getInstance().speed += 50;
-            pay(5);
+            pay();
             refreshAndClose();
         });
         maxHealth.setOnAction(e -> {
             StateMachine.getInstance().maxHealth += 20;
             GameScene.getPlayer().increaseHealth(20);
-            pay(5);
+            pay();
             refreshAndClose();
         });
         heal.setOnAction(e -> {
             GameScene.getPlayer().setHealth(StateMachine.getInstance().maxHealth);
-            pay(5);
+            pay();
             refreshAndClose();
         });
         reloadTime.setOnAction(e -> {
             StateMachine.getInstance().reloadTime = Math.max(100, StateMachine.getInstance().reloadTime - 100);
-            pay(5);
+            pay();
             refreshAndClose();
         });
 
@@ -71,12 +84,20 @@ public class UpgradeScreen extends Menu {
         addButton(reloadTime, 8);
     }
 
-    private void pay(int amount) {
-        StateMachine.getInstance().money -= amount;
+    private void pay() {
+        numberOfUpgrades--;
+        upgradesLeft.setText("Upgrades left: " + numberOfUpgrades);
     }
 
     private void refreshAndClose() {
         Stats.refresh();
-        close();
+        if (numberOfUpgrades <= 0) {
+            close();
+        }
+    }
+
+    @Override
+    public void refresh() {
+        GameScene.setOverlay(new UpgradeScreen(getWidth(), getHeight(), numberOfUpgrades));
     }
 }
