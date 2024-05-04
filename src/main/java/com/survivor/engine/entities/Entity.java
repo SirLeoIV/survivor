@@ -98,29 +98,30 @@ public abstract class Entity extends Parent implements GameListener {
     }
 
     public boolean isColliding(Entity other) {
-        Vector2D[] corners = new Vector2D[] {
-            new Vector2D(getX(), getY()),
-            new Vector2D(getX() + getLayout().getWidth(), getY()),
-            new Vector2D(getX(), getY() + getLayout().getHeight()),
-            new Vector2D(getX() + getLayout().getWidth(), getY() + getLayout().getHeight())
-        };
-        for (Vector2D corner : corners) {
-            if (corner.getX() > other.getX() && corner.getX() < other.getX() + other.getLayout().getWidth() &&
-                corner.getY() > other.getY() && corner.getY() < other.getY() + other.getLayout().getHeight()) {
-                return true;
-            }
-        }
-        return false;
+        return getOverlapX(other) >= 0 && getOverlapY(other) >= 0;
     }
 
-    public boolean isCollidingV2(Entity other) {
-        Vector2D distance = Vector2D.subtract(getLayout().getCenter(), other.getLayout().getCenter()).absolute();
-        Vector2D combinedWidth = Vector2D.add(
-                new Vector2D(getLayout().getWidth() / 2, getLayout().getHeight() / 2),
-                new Vector2D(other.getLayout().getWidth() / 2, other.getLayout().getHeight() / 2)
-        );
-        Vector2D overlap = Vector2D.subtract(
-                distance, combinedWidth);
-        return overlap.getX() < 0 && overlap.getY() < 0;
+    public Vector2D getUpLeft() {
+        return new Vector2D(getX(), getY());
+    }
+
+    public Vector2D getUpRight() {
+        return new Vector2D(getX() + getLayout().getWidth(), getY());
+    }
+
+    public Vector2D getDownRight() {
+        return new Vector2D(getX() + getLayout().getWidth(), getY() + getLayout().getHeight());
+    }
+
+    public Vector2D getDownLeft() {
+        return new Vector2D(getX(), getY() + getLayout().getHeight());
+    }
+
+    public double getOverlapX(Entity other) {
+        return - Math.max(getX(), other.getX()) + Math.min(getX() + getLayout().getWidth(), other.getX() + other.getLayout().getWidth());
+    }
+
+    public double getOverlapY(Entity other) {
+        return - Math.max(getY(), other.getY()) + Math.min(getY() + getLayout().getHeight(), other.getY() + other.getLayout().getHeight());
     }
 }

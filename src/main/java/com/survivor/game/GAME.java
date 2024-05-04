@@ -1,6 +1,7 @@
 package com.survivor.game;
 
 import com.survivor.engine.GameScene;
+import com.survivor.engine.entities.Wall;
 import com.survivor.engine.math.Layout;
 import com.survivor.game.entities.*;
 import com.survivor.game.overlays.GameOverScreen;
@@ -42,10 +43,12 @@ public class GAME {
         new FPS();
         new Coordinates(player, new Layout(10, 50, 1, 1, 0));
         new Stats();
+        new Wall(new Layout(100, 100, 150, 30, 0));
+        new Wall(new Layout(100, 100, 30, 150, 0));
         Stats.refresh();
         waveNumber = 1;
         currentWave = new Wave("Wave 1", 5, 0);
-        currentWave.startWave();
+        // currentWave.startWave();
         GameScene.setOverlay(new UpgradeScreen(500, 500, 1));
 
         timer = new AnimationTimer() {
@@ -57,7 +60,7 @@ public class GAME {
                     stop();
                     return;
                 }
-                if (currentWave.isWaveOver()) {
+                if (currentWave.isWaveOver() && false) {
                     waveNumber++;
                     StateMachine.getInstance().wave = waveNumber;
                     Stats.refresh();

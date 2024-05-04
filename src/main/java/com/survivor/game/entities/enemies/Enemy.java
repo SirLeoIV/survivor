@@ -57,6 +57,10 @@ public abstract class Enemy extends Character implements CollisionListener {
     public void collisionUpdate(CollisionEvent event) {
         if (event.entity1 == this || event.entity2 == this) {
             if (event.entity1 instanceof Bullet || event.entity2 instanceof Bullet) {
+                if (event.entity1 instanceof Bullet) {
+                    if (((Bullet) event.entity1).penetrationLeft <= 0) return;
+                } else if (((Bullet) event.entity2).penetrationLeft <= 0) return;
+
                 lastHitTime = System.currentTimeMillis();
                 health = health - StateMachine.getInstance().damage;
                 if (health <= 0) {
@@ -74,7 +78,7 @@ public abstract class Enemy extends Character implements CollisionListener {
     private void checkCollisions() {
         if (lastHitTime < System.currentTimeMillis() - 50) {
             for (Bullet bullet : Bullet.getAllBullets()) {
-                if (isCollidingV2(bullet)) {
+                if (isColliding(bullet)) {
                     GameScene.notifyCollisionListeners(
                             new CollisionEvent("Collision between: ", this, bullet));
                 }

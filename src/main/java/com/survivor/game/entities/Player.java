@@ -23,6 +23,11 @@ public class Player extends Character implements InputListener, CollisionListene
     private int health = StateMachine.getInstance().maxHealth;
     private long lastHitTime = 0;
 
+    private long pressedUpTime = 0;
+    private long pressedDownTime = 0;
+    private long pressedLeftTime = 0;
+    private long pressedRightTime = 0;
+
     private ProgressBar healthBar = new ProgressBar(new Vector2D(0, 0), 8, 8);
 
     private boolean upPressed = false;
@@ -42,7 +47,7 @@ public class Player extends Character implements InputListener, CollisionListene
 
 
         text = new Text("P");
-        text.setX(0);
+        text.setX(-3);
         text.setY(getLayout().getHeight());
         text.setFont(new Font(50));
         getChildren().add(text);
@@ -80,13 +85,13 @@ public class Player extends Character implements InputListener, CollisionListene
                     case KEY_RIGHT, KEY_D -> rightPressed();
                     case KEY_SPACE -> dash();
                 }}
-            // case KEY_PRESSED -> {
-            //     switch (event.key) {
-            //         case KEY_UP, KEY_W -> upPressing();
-            //         case KEY_DOWN, KEY_S -> downPressing();
-            //         case KEY_LEFT, KEY_A -> leftPressing();
-            //         case KEY_RIGHT, KEY_D -> rightPressing();
-            //     }}
+            case KEY_PRESSED -> {
+                switch (event.key) {
+                    case KEY_UP, KEY_W -> upPressing();
+                    case KEY_DOWN, KEY_S -> downPressing();
+                    case KEY_LEFT, KEY_A -> leftPressing();
+                    case KEY_RIGHT, KEY_D -> rightPressing();
+                }}
             case KEY_RELEASED -> {
                 switch (event.key) {
                     case KEY_UP, KEY_W -> upPressed = false;
@@ -157,7 +162,9 @@ public class Player extends Character implements InputListener, CollisionListene
         if (dashing) {
             move(dashDirection.getX() * StateMachine.getInstance().speed * 6 * millisPassed / 1000
                     , dashDirection.getY() * StateMachine.getInstance().speed * 6 * millisPassed / 1000);
+            if (touchingWall) dashing = false;
             dashing = System.currentTimeMillis() - dashStart < 100;
+            new Dot(new Layout(getLayout().getCenter().getX(), getLayout().getCenter().getY(), 1, 1, 0), 5000);
         }
         checkCollisions();
     }
@@ -201,7 +208,7 @@ public class Player extends Character implements InputListener, CollisionListene
     private void checkCollisions() {
         if (dashing || lastHitTime > System.currentTimeMillis() - 400) return;
         for (Enemy enemy : Enemy.getAllEnemies()) {
-            if (isCollidingV2(enemy)) {
+            if (isColliding(enemy)) {
                 GameScene.notifyCollisionListeners(
                         new CollisionEvent("Collision between: ", this, enemy));
             }

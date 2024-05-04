@@ -91,6 +91,10 @@ public class Vector2D {
         return new Vector2D(x + Math.random() * max - max / 2, y + Math.random() * max - max / 2);
     }
 
+    public static double crossProduct(Vector2D v1, Vector2D v2) {
+        return v1.getX() * v2.getY() - v1.getY() * v2.getX();
+    }
+
     public static void main(String[] args) {
         Vector2D v = new Vector2D(1, 1);
         for (int i = 0; i < 10; i++) {
